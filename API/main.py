@@ -1,7 +1,8 @@
 from typing import Union
-
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from text_recognition_model import predict_text
 
 app = FastAPI()
 
@@ -22,3 +23,18 @@ app.add_middleware(
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
+
+class TextInput(BaseModel):
+    text: str
+
+@app.post("/predict/text")
+async def predict(input: TextInput):
+    try:
+        predictions = predict_text(input.text)
+        return {"predictions": predictions.tolist()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
