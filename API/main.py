@@ -1,8 +1,11 @@
 from typing import Union
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from text_recognition_model import predict_text
+from image_recognition_model import read_imagefile, predict_image  # Import fungsi dari file baru
+import uvicorn
+from starlette.responses import RedirectResponse
 
 app = FastAPI()
 
@@ -31,9 +34,19 @@ class TextInput(BaseModel):
 async def predict(input: TextInput):
     try:
         predictions = predict_text(input.text)
-        return {"predictions": predictions.tolist()}
+        return {"predictions": predictions}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/predict/image")
+async def predict_api(file: UploadFile = File(...)):
+    extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png")
+    if not extension:
+        raise HTTPException(status_code=400, detail="Image must be jpg or png format!")
+    image = read_imagefile(await file.read())
+    prediction = predict_image(image)
+
+    return prediction
 
 if __name__ == "__main__":
     import uvicorn
