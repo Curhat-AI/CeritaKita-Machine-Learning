@@ -58,11 +58,23 @@ def translate_text(text_input, target_language='en'):
     translation = translator.translate(text_input, dest=target_language)
     return translation.text
 
-def predict_text(text_input):
+def predict_text(text_input, top_n=3):
+    emotion_mapping = {
+        0: 'sadness',
+        1: 'joy',
+        2: 'love',
+        3: 'anger',
+        4: 'fear',
+        5: 'surprise'
+    }
+
     translated_text = translate_text(text_input)
     input_ids, attention_mask = preprocess_input(translated_text)
     predictions = model.predict([input_ids, attention_mask])
-    predicted_class = np.argmax(predictions, axis=1)
     
-    return predicted_class[0]  
+    top_n_indices = np.argsort(predictions, axis=1)[0, -top_n:][::-1] 
+    top_n_emotions = [emotion_mapping[idx] for idx in top_n_indices]
+    
+    return top_n_emotions
+
 
