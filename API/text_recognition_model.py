@@ -6,6 +6,7 @@ import numpy as np
 from googletrans import Translator
 
 from transformers import TFMobileBertModel
+from tensorflow.keras.utils import custom_object_scope
 
 class CustomLayer(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
@@ -32,14 +33,13 @@ class CustomLayer(tf.keras.layers.Layer):
         return self.dropout2(x)
 
 def load_model_from_h5(model_path):
-    return load_model(model_path, custom_objects={'CustomLayer': CustomLayer, 'TFMobileBertModel': TFMobileBertModel})
+    with custom_object_scope({'CustomLayer': CustomLayer, 'TFMobileBertModel': TFMobileBertModel}):
+        return load_model(model_path)
 
 model = load_model_from_h5('model_text.h5')  
 
 def preprocess_input(text_input):
-
     tokenizer = MobileBertTokenizer.from_pretrained("google/mobilebert-uncased")
-
     tokenized_text = tokenizer(
         text_input,
         padding='max_length', 
@@ -47,10 +47,8 @@ def preprocess_input(text_input):
         max_length=128, 
         return_tensors='tf' 
     )
-
     input_ids = tokenized_text['input_ids']
     attention_mask = tokenized_text['attention_mask']
-
     return input_ids, attention_mask
 
 def translate_text(text_input, target_language='en'):
@@ -76,5 +74,3 @@ def predict_text(text_input, top_n=3):
     top_n_emotions = [emotion_mapping[idx] for idx in top_n_indices]
     
     return top_n_emotions
-
-
