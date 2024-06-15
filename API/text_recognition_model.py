@@ -36,7 +36,7 @@ def load_model_from_h5(model_path):
     with custom_object_scope({'CustomLayer': CustomLayer, 'TFMobileBertModel': TFMobileBertModel}):
         return load_model(model_path)
 
-model = load_model_from_h5('model_text.h5')  
+model = load_model_from_h5('model_text (1).h5')  
 
 def preprocess_input(text_input):
     tokenizer = MobileBertTokenizer.from_pretrained("google/mobilebert-uncased")
