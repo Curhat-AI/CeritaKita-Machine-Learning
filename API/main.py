@@ -4,12 +4,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from text_recognition_model import predict_text
 from image_recognition_model import predict_image
+from mental_issue_recognition_model import predict_mental_issue
 
 app = FastAPI()
 
 origins = [
     "http://localhost",
     "http://localhost:8080",
+    "http://localhost:8000",
     "*"
 ]
 
@@ -28,6 +30,9 @@ async def read_root():
 class TextInput(BaseModel):
     text: str
 
+class MentalTextInput(BaseModel):
+    text: str
+
 @app.post("/predict/text")
 async def predict(input: TextInput):
     try:
@@ -44,6 +49,15 @@ async def predict_image_endpoint(file: UploadFile = File(...)):
         return {"predicted_class": predicted_class}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/predict/mental-issue")
+async def predict_mental(input: MentalTextInput):
+    try:
+        predictions = predict_mental_issue(input.text)
+        return {"predictions": predictions}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn

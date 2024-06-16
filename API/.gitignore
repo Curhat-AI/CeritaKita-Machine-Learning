@@ -1,1 +1,5 @@
 Pipfile.lock
+model.tflite
+model_text.h5
+model_text_mobile.tflite
+model_image.keras
