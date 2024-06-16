@@ -1,7 +1,0 @@
-tensorflow==2.15.0
-transformers==4.32.1
-googletrans==4.0.0-rc.1
-fastapi==0.110.3
-pydantic==1.10.8
-pillow==9.4.0
-numpy==1.24.3
