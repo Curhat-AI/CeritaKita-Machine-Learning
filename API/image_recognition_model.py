@@ -1,3 +1,4 @@
+import os
 from tensorflow.keras.models import load_model
 from tensorflow.keras.utils import get_custom_objects
 import tensorflow as tf
@@ -12,7 +13,7 @@ def swish_activation(x):
 get_custom_objects().update({'swish_activation': swish_activation})
 
 # Load the model
-model = load_model('model_image.keras')
+model = load_model(os.getenv("IMAGE_MODEL_PATH"))
 
 class_names = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 

@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import numpy as np
 from googletrans import Translator
@@ -94,7 +95,7 @@ def predict_mental_issue(text_input, top_n=2):
     translated_text = translate_text(cleaned_text)
     input_ids, attention_mask = preprocess_input(translated_text)
 
-    interpreter = tf.lite.Interpreter(model_path='model.tflite')
+    interpreter = tf.lite.Interpreter(model_path=os.getenv("MENTAL_MODEL_PATH"))
     interpreter.allocate_tensors()
     interpreter.get_input_details()
 

@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 from transformers import MobileBertTokenizer
 from tensorflow.keras.layers import Dense, BatchNormalization, Dropout
@@ -36,7 +37,7 @@ def load_model_from_h5(model_path):
     with custom_object_scope({'CustomLayer': CustomLayer, 'TFMobileBertModel': TFMobileBertModel}):
         return load_model(model_path)
 
-model = load_model_from_h5("model_text.h5")  
+model = load_model_from_h5(os.getenv("TEXT_MODEL_PATH"))  
 
 def preprocess_input(text_input):
     tokenizer = MobileBertTokenizer.from_pretrained("google/mobilebert-uncased")

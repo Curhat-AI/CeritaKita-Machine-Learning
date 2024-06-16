@@ -1,7 +1,9 @@
+import os
 from typing import Union
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from config import *
 from text_recognition_model import predict_text
 from image_recognition_model import predict_image
 from mental_issue_recognition_model import predict_mental_issue
@@ -61,4 +63,4 @@ async def predict_mental(input: MentalTextInput):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=os.getenv("PORT", 8000))
