@@ -3,9 +3,7 @@ from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from text_recognition_model import predict_text
-from image_recognition_model import read_imagefile, predict_image  # Import fungsi dari file baru
-import uvicorn
-from starlette.responses import RedirectResponse
+from image_recognition_model import predict_image
 
 app = FastAPI()
 
@@ -39,14 +37,13 @@ async def predict(input: TextInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/predict/image")
-async def predict_api(file: UploadFile = File(...)):
-    extension = file.filename.split(".")[-1] in ("jpg", "jpeg", "png")
-    if not extension:
-        raise HTTPException(status_code=400, detail="Image must be jpg or png format!")
-    image = read_imagefile(await file.read())
-    prediction = predict_image(image)
-
-    return prediction
+async def predict_image_endpoint(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        predicted_class = predict_image(contents)
+        return {"predicted_class": predicted_class}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
