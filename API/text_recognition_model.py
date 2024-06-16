@@ -56,7 +56,7 @@ def translate_text(text_input, target_language='en'):
     translation = translator.translate(text_input, dest=target_language)
     return translation.text
 
-def predict_text(text_input, top_n=3):
+def predict_text(text_input, top_n=2):
     emotion_mapping = {
         0: 'sadness',
         1: 'joy',
