@@ -1,0 +1,10 @@
+services:
+  ml:
+    build:
+      context: .
+      args:
+        - ENV=${ENV:-local}
+    ports:
+      - "80:8000"
+    volumes:
+      - .:/app
