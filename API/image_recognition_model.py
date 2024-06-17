@@ -23,7 +23,7 @@ def preprocess_image(img: Image.Image) -> np.ndarray:
     img_array = np.array(img)
     img_array = img_array / 255.0  # Normalize the image
     img_array = np.expand_dims(img_array, axis=0)  # Add batch axis
-    img_array = np.expand_dims(img_array, axis=1)  # Add channel axis
+    img_array = np.expand_dims(img_array, axis=-1)  # Add channel axis
     return img_array
 
 def predict_image(contents: bytes) -> list:

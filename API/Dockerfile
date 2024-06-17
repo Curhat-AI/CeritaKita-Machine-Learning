@@ -17,4 +17,4 @@ RUN if [ "$ENV" != "local" ]; then \
   rm -rf /ml-models /ml-models/; \
   fi
 
-CMD ["python3", "main.py"]
+  CMD ["python3", "main.py"]
