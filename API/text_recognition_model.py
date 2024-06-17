@@ -59,12 +59,12 @@ def translate_text(text_input, target_language='en'):
 
 def predict_text(text_input, top_n=2):
     emotion_mapping = {
-        0: 'sadness',
-        1: 'joy',
-        2: 'love',
-        3: 'anger',
-        4: 'fear',
-        5: 'surprise'
+        0: 'Sedih',
+        1: 'Senang',
+        2: 'Cinta',
+        3: 'Marah',
+        4: 'Takut',
+        5: 'Terkejut'
     }
 
     translated_text = translate_text(text_input)
