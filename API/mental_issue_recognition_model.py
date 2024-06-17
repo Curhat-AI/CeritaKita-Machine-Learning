@@ -87,9 +87,9 @@ def translate_text(text_input, target_language='en'):
 
 def predict_mental_issue(text_input, top_n=2):
     mental_issue_mapping = {
-        0: 'Depressed',
-        1: 'Stressed',
-        2: 'Anxious',
+        0: 'Depresi',
+        1: 'Stress',
+        2: 'Cemas',
     }
     cleaned_text = cleaning_text(text_input)
     translated_text = translate_text(cleaned_text)
