@@ -1,12 +1,10 @@
 import firebase_admin
-from firebase_admin import firestore
-from google.oauth2 import service_account
+from firebase_admin import credentials, firestore
 import pandas as pd
 
-cred = firebase_admin.credentials.Certificate("serviceaccountKey-firebase-adminsdk.json")
+cred = credentials.ApplicationDefault()
 firebase_admin.initialize_app(cred)
 db = firestore.client()
-credentials = service_account.Credentials.from_service_account_file("serviceaccountKey-firebase-adminsdk.json")
 
 def recommendation_result(input):
     users = list(db.collection('users').stream())

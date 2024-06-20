@@ -14,7 +14,8 @@ ENV ENV=${ENV}
 COPY . .
 
 RUN if [ "$ENV" != "local" ]; then \
-  rm -rf /ml-models /ml-models/; \
+  rm -rf /app/ml-models/;\
+  rm -rf /app/secrets/;\
   fi
 
-  CMD ["python3", "main.py"]
+CMD ["python3", "main.py"]
