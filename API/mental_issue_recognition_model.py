@@ -4,6 +4,9 @@ import numpy as np
 from googletrans import Translator
 
 from transformers import AutoTokenizer
+from tensorflow.keras.models import load_model
+import transformers
+
 
 import re
 import string
@@ -85,6 +88,11 @@ def translate_text(text_input, target_language='en'):
     translation = translator.translate(text_input, dest=target_language)
     return translation.text
 
+def load_model_from_h5(model_path):
+    return load_model(model_path, custom_objects={"TFBertModel": transformers.TFBertModel})
+
+model = load_model_from_h5(os.getenv("MENTAL_MODEL_PATH"))  
+
 def predict_mental_issue(text_input, top_n=2):
     mental_issue_mapping = {
         0: 'Depresi',
@@ -94,45 +102,47 @@ def predict_mental_issue(text_input, top_n=2):
     cleaned_text = cleaning_text(text_input)
     translated_text = translate_text(cleaned_text)
     input_ids, attention_mask = preprocess_input(translated_text)
-
-    interpreter = tf.lite.Interpreter(model_path=os.getenv("MENTAL_MODEL_PATH"))
-    interpreter.allocate_tensors()
-    interpreter.get_input_details()
-
-    sample_input_index = np.expand_dims(input_ids[0], 0).astype(np.int32)
-    sample_masks_index = np.expand_dims(attention_mask[0], 0).astype(np.int32)
-
-    input_tensors = [sample_input_index, sample_masks_index]
+    prediction = model.predict([input_ids, attention_mask])
     
 
-    bert_input_index = interpreter.get_input_details()[0]["index"]
-    bert_input_masks_index = interpreter.get_input_details()[1]["index"]
-    output_index = interpreter.get_output_details()[0]["index"]
+    # interpreter = tf.lite.Interpreter(model_path=os.getenv("MENTAL_MODEL_PATH"))
+    # interpreter.allocate_tensors()
+    # interpreter.get_input_details()
 
-    interpreter.set_tensor(bert_input_index, sample_input_index)
-    interpreter.set_tensor(bert_input_masks_index, sample_masks_index)
-    interpreter.invoke()
-    prediction = interpreter.tensor(output_index)
-    # print(prediction()[0])
+    # sample_input_index = np.expand_dims(input_ids[0], 0).astype(np.int32)
+    # sample_masks_index = np.expand_dims(attention_mask[0], 0).astype(np.int32)
 
-    # input_index = interpreter.get_input_details()[0]["index"]
+    # input_tensors = [sample_input_index, sample_masks_index]
+    
+
+    # bert_input_index = interpreter.get_input_details()[0]["index"]
+    # bert_input_masks_index = interpreter.get_input_details()[1]["index"]
     # output_index = interpreter.get_output_details()[0]["index"]
 
-    # interpreter.set_tensor(input_index, img)
+    # interpreter.set_tensor(bert_input_index, sample_input_index)
+    # interpreter.set_tensor(bert_input_masks_index, sample_masks_index)
     # interpreter.invoke()
-    # prediction = []
-    prediction = (interpreter.get_tensor(output_index))
+    # prediction = interpreter.tensor(output_index)
+    # # print(prediction()[0])
 
-    # predicted_label = np.argmax(prediction)
-    # class_names = ['rock', 'paper', 'scissors']
+    # # input_index = interpreter.get_input_details()[0]["index"]
+    # # output_index = interpreter.get_output_details()[0]["index"]
 
-    # return class_names[predicted_label]
+    # # interpreter.set_tensor(input_index, img)
+    # # interpreter.invoke()
+    # # prediction = []
+    # prediction = (interpreter.get_tensor(output_index))
 
-    # translated_text = translate_text(text_input)
-    # input_ids, attention_mask = preprocess_input(translated_text)
-    # predictions = model.predict([input_ids, attention_mask])
+    # # predicted_label = np.argmax(prediction)
+    # # class_names = ['rock', 'paper', 'scissors']
 
-    top_n_indices = np.argsort(prediction, axis=1)[0, -2:][::-1] 
+    # # return class_names[predicted_label]
+
+    # # translated_text = translate_text(text_input)
+    # # input_ids, attention_mask = preprocess_input(translated_text)
+    # # predictions = model.predict([input_ids, attention_mask])
+
+    top_n_indices = np.argsort(prediction, axis=1)[0, -top_n:][::-1] 
     top_n_mental_issue = [mental_issue_mapping[idx] for idx in top_n_indices]
     top_n_mental_issue
     
